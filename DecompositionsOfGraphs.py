@@ -22,53 +22,57 @@ for all v in V :
     if visited(v) = False :
         explore(v)
 """
-clock = 1
+import networkx as nx
+import matplotlib.pyplot as plt
 
-class Graph :
-    nodelist = []
-    edgelist = []
-    visited = []
-    pre = []
-    post = []
+clock = 1
+DFS = nx.DiGraph()
+
     
 def explore(G, v):
-    G.visited[G.nodelist.index(v)] = True
+    global DFS
+    DFS.add_node(v)
+    G.node[v]['visited'] = True
     previsit(G,v)
     print(v, end = " ")
-    for x in G.edgelist :
-        if(x[0].__eq__(v) and G.visited[G.nodelist.index(x[1])] == False) :
-            print("to", x[1])
+    for x in G.edges() :
+        if(x[0].__eq__(v) and G.node[x[1]]['visited'] == False) :
+            DFS.add_edge(x[0], x[1])
             explore(G, x[1])
     postvisit(G,v)  
           
 def previsit(G, v):
     global clock
-    G.pre[G.nodelist.index(v)] = clock
+    G.node[v]['pre'] = clock
     clock += 1
     
 def postvisit(G, v):
     global clock
-    G.post[G.nodelist.index(v)] = clock
+    G.node[v]['post'] = clock
     clock += 1
                 
 def dfs(G):
     global clock
     clock = 1
-    G.visited.clear()
-    for x in G.nodelist :
-        G.visited.append(False)
-        G.pre.append(0)
-        G.post.append(0)
-    for x in G.nodelist :
-        if(G.visited[G.nodelist.index(x)] == False) :
+    for x in G.nodes() :
+        G.node[x]['visited'] = False
+    for x in G.nodes() :
+        if(G.node[x]['visited'] == False) :
             explore(G, x)
-    result = list(zip(G.nodelist, G.pre, G.post))
+    result = list(zip(G.nodes(data=True)))
     print(result)
+    nx.draw_networkx(DFS)
+    plt.show()
 
-g = Graph()
-g.nodelist = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-g.edgelist = [['a', 'b'], ['a', 'c'], ['a', 'f'], ['b', 'e'],
-              ['c', 'd'], ['d', 'a'], ['e', 'f'], ['e', 'g'],
-              ['e', 'h'], ['f', 'g'], ['h', 'g']]  # construct Graph
 
-dfs(g)
+
+nodelist = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+edgelist = [('a', 'b'), ('a', 'c'), ('a', 'f'), ('b', 'e'),
+            ('c', 'd'), ('d', 'a'), ('e', 'f'), ('e', 'g'),
+            ('e', 'h'), ('f', 'g'), ('h', 'g')]  # construct Graph
+
+G = nx.DiGraph()
+G.add_nodes_from(nodelist)
+G.add_edges_from(edgelist)
+print(list(G.nodes_iter()))
+dfs(G)

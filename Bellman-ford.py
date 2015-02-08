@@ -26,33 +26,30 @@ procedure update((u,v) in E)
 dist(v) = min{ dist(v), dist(u) + l(u,v)}
 
 '''
-class Graph :
-    nodelist = []
-    edgelist = []
-    distance = []
-    prev = []
-    
+import networkx as nx
+import matplotlib.pyplot as plt
 
-graph = Graph()
-graph.nodelist = ['s','a','b','c','d','e','f','g']
-graph.edgelist = [['s','a',10],['s','g',8],['a','e',2],['b','c',1],
-                   ['c','d',3],['d','e',-1],['e','b',-2],['f','a',-4],
-                   ['f','e',-1],['g','f',1]]
+bf = nx.DiGraph()
 
-def bellman_ford(G):
-    infinite = float("inf")
-    print("infinite : ", infinite )
-    for x in G.nodelist :
-        G.distance.append(infinite)
-        G.prev.append(None)
-    G.distance[0] = 0
-    print(G.distance)
-    for x in range(1,len(G.nodelist)) :
-        for e in G.edgelist :
-            G.distance[G.nodelist.index(e[1])] = min(G.distance[G.nodelist.index(e[1])],G.distance[G.nodelist.index(e[0])]+e[2])
-        print(G.distance)
-    print("result : ", list(zip(G.nodelist,G.distance)))
+def bellman_ford(G,s):
+    for x in G.nodes() :
+        G.node[x]['distance'] = float("inf")
+        G.node[x]['prev'] = None
+    G.node[s]['distance'] = 0
+    for x in range(G.number_of_nodes()-1) :
+        for e in G.edges(data=True) :
+            G.node[e[1]]['distance'] = min(G.node[e[1]]['distance'],G.node[e[0]]['distance']+e[2].get('weight'))
+    for x in G.nodes(data=True) :
+        print(x)
             
-            
-bellman_ford(graph)
+
+G = nx.DiGraph()
+nodelist = ['s','a','b','c','d','e','f','g']
+edgelist = [('s','a',10),('s','g',8),('a','e',2),('b','c',1),
+                   ('c','d',3),('d','e',-1),('e','b',-2),('f','a',-4),
+                   ('f','e',-1),('g','f',1)]
+G.add_nodes_from(nodelist)
+G.add_weighted_edges_from(edgelist)
+
+bellman_ford(G,'s')
         
