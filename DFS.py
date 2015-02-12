@@ -30,12 +30,11 @@ DFS = nx.DiGraph()
 
     
 def explore(G, v):
-    global DFS
     DFS.add_node(v)
     G.node[v]['visited'] = True
     previsit(G,v)
-    print(v, end = " ")
-    for x in G.edges() :
+    print(v)
+    for x in sorted(G.edges(),key=getedge) :
         if(x[0].__eq__(v) and G.node[x[1]]['visited'] == False) :
             DFS.add_edge(x[0], x[1])
             explore(G, x[1])
@@ -50,17 +49,23 @@ def postvisit(G, v):
     global clock
     G.node[v]['post'] = clock
     clock += 1
+    
+def getnode(x): # function for sorting node with node name
+    return x[0]
+
+def getedge(x): # function for sorting edge with destination of edge
+    return x[1]
                 
 def dfs(G):
     global clock
     clock = 1
     for x in G.nodes() :
         G.node[x]['visited'] = False
-    for x in G.nodes() :
+    for x in sorted(G.nodes(),key=getnode) :
         if(G.node[x]['visited'] == False) :
             explore(G, x)
-    result = list(zip(G.nodes(data=True)))
-    print(result)
+    for x in sorted(G.nodes(data=True),key=getnode) :
+        print(x)
     nx.draw_networkx(DFS)
     plt.show()
 

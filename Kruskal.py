@@ -49,7 +49,6 @@ def kruskal(G):
     
     def makeset(x):
         G.node[x]['pi'] = x
-        print(x,"pi : ", G.node[x]['pi'])
         G.node[x]['rank'] = 0
         
     def union(x,y):
@@ -80,7 +79,9 @@ def kruskal(G):
     kru.add_nodes_from(G)
     print(X)
     kru.add_weighted_edges_from(X)
-    nx.draw_networkx(kru)
+    pos = nx.spring_layout(kru)
+    nx.draw_networkx(kru,pos)
+    nx.draw_networkx_edge_labels(kru,pos,edge_labels=dict([((u,v),d['weight']) for u,v,d in kru.edges(data=True)]))
     plt.show()
             
         

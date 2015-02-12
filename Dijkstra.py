@@ -58,12 +58,14 @@ def dijkstra(G,s):
                         for z in G.predecessors(y[1]) :
                             try : dij.remove_edge(z, y[1])
                             except NetworkXError : pass
-                        dij.add_edge(u[1], y[1])
+                        dij.add_edge(u[1], y[1],weight=x[2].get('weight'))
                         print(u[1], " to ", y[1], y[0], " through", x[2])
                         dij.node[y[1]]['prev'] = u[1]
                         dij.node[y[1]]['distance'] = y[0]
     
-    nx.draw_networkx(dij)
+    pos = nx.spring_layout(dij)
+    nx.draw_networkx(dij,pos)
+    nx.draw_networkx_edge_labels(dij,pos,edge_labels=dict([((u,v),d['weight']) for u,v,d in dij.edges(data=True)]))
     print(dij.nodes(data=True))
     plt.show()
 
