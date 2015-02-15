@@ -63,11 +63,13 @@ def prim(G):
                         pri.add_edge(u[1], y[1],weight=y[0])
                         print(u[1], " to ", y[1], " through", x[2])
                         pri.node[y[1]]['prev'] = u[1]
-    
+    '''
     pos = nx.spring_layout(pri)
     nx.draw_networkx(pri,pos)
     nx.draw_networkx_edge_labels(pri,pos,edge_labels=dict([((u,v),d['weight']) for u,v,d in pri.edges(data=True)]))
     print(pri.nodes(data=True))
+    '''
+    nx.draw_graphviz(pri, prog="sfdp")
     plt.show()
 
 
