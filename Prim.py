@@ -26,7 +26,7 @@ while H is not empty :
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from networkx.exception import NetworkXError
+import copy
 pri = nx.Graph()
 
 def prim(G):
@@ -36,40 +36,40 @@ def prim(G):
         G.node[x]['prev'] = None
     z = G.nodes()[0]
     G.node[z]['cost'] = 0
-    
-    H = list()
-    for x in G.nodes() :
-        dic = []
-        dic.append(G.node[x]['cost'])
-        dic.append(x)
-        H.append(dic)
-        
-    while(len(H)!=0) :
-        min = H[0]
-        for x in H :
-            if(x[0]<min[0]) :
-                min = x
-        u = H.pop(H.index(min))
-        pri.add_node(u[1], cost = u[0])
-        for x in G.edges(data=True) :
-            if(x[0].__eq__(u[1])) :
-                for y in H :
-                    print(y)
-                    if(y[1] == x[1] and y[0]> x[2].get('weight')) :
-                        y[0] = x[2].get('weight')
-                        for z in G.neighbors(y[1]) :
-                            try : pri.remove_edge(z, y[1])
-                            except NetworkXError : pass
-                        pri.add_edge(u[1], y[1],weight=y[0])
-                        print(u[1], " to ", y[1], " through", x[2])
-                        pri.node[y[1]]['prev'] = u[1]
-    '''
+    H = copy.copy(G.nodes())
+    S = []
+    H.pop(H.index(z))
+    pri.add_node(z, cost=0)
+    S.append(z)
+    print(H)
+    print(z)
+    while H :
+        minPre = None
+        min = None
+        minCost = infinite
+        print("S : ", S)
+        print("S edges :", G.edges(S))
+        for x in S :
+            for y in S :
+                try : G.remove_edge(x,y)
+                except nx.exception.NetworkXError : pass
+        for x in G.edges(S,data=True) :
+            if x[2].get('weight') < minCost :
+                minCost = x[2].get('weight')
+                min = x[1]
+                minPre = x[0]
+        print(min," to ",minPre,' cost with ',minCost)
+        pri.add_edge(minPre,min, cost=minCost)
+        if min in H :
+            H.pop(H.index(min))
+            S.append(min)
+        else :
+            H.pop(H.index(minPre))
+            S.append(minPre)
+
     pos = nx.spring_layout(pri)
     nx.draw_networkx(pri,pos)
-    nx.draw_networkx_edge_labels(pri,pos,edge_labels=dict([((u,v),d['weight']) for u,v,d in pri.edges(data=True)]))
-    print(pri.nodes(data=True))
-    '''
-    nx.draw_graphviz(pri, prog="sfdp")
+    nx.draw_networkx_edge_labels(pri,pos,edge_labels=dict([((u,v),d['cost']) for u,v,d in pri.edges(data=True)]))
     plt.show()
 
 
